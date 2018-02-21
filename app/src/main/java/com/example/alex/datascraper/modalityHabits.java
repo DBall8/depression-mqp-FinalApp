@@ -91,7 +91,6 @@ public class modalityHabits{
         // when all threads that will be started have been started and also finished, mark as done sending
         // and send the END message to the server
         if(activeThreads <= 0 && dispatchDone){
-            serverHook.sendToServer("debug", "END");
             Log.d("MYAPP", "ALL DONE");
             DONE = true;
         }

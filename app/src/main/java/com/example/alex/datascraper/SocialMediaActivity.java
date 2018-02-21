@@ -359,7 +359,6 @@ public class SocialMediaActivity extends AppCompatActivity {
                         }
 
                     }
-                    serverHook.sendToServer("debug", "END");
                     startActivity(new Intent(SocialMediaActivity.this, resultsActivity.class));
                 }
                 // if in progress of GPS download, do not continue

@@ -29,16 +29,16 @@ import java.nio.ByteBuffer;
 public class serverHook extends AppCompatActivity {
 
     // URL of server to send data to
-    private final static String request = "http://depressionmqp.wpi.edu:8080";
+    private final static String request = "http://[YOUR ID HERE]:8080";//http://depressionmqp.wpi.edu:8080";
     // Unique ID that is the only identifier saved with the data obtained
     public static String identifier = "";
 
     // initializes serverHook by obtaining a unique ID
     public static String start(){
         // FOR TESTING DURING SURVEY, DONT SEND TO OUR SERVER SO COMMENT THIS OUT //
-        identifier = "1234";
-        return "1234";
-        /*  REMOVE THIS COMMENT WHEN THE SURVEY IS OVER
+        //identifier = "1234";
+        //return "1234";
+        //  REMOVE THIS COMMENT WHEN THE SURVEY IS OVER
         identifier = "";
 
         // connect to server
@@ -49,7 +49,7 @@ public class serverHook extends AppCompatActivity {
             StrictMode.setThreadPolicy(policy);
 
             URL url = new URL(request + "/initiateclient");
-
+            Log.d("MYAPP", "TEST: " + request + "/initiateclient");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(false);
             connection.setDoInput(true);
@@ -75,6 +75,7 @@ public class serverHook extends AppCompatActivity {
                 }
                 in.close();
             }catch(Exception e){
+
                 return "";
             }
             connection.disconnect();
@@ -84,7 +85,7 @@ public class serverHook extends AppCompatActivity {
             identifier = "";
         }
         return identifier;
-        REMOVE THIS COMMENT WHEN THE SURVEY IS OVER */
+        //REMOVE THIS COMMENT WHEN THE SURVEY IS OVER */
     }
 
     // Attempts to send a message to the server
@@ -140,8 +141,8 @@ public class serverHook extends AppCompatActivity {
             return;
         }
 
-        return;
-        /*  REMOVE THIS COMMENT WHEN THE SURVEY IS OVER
+
+        //  REMOVE THIS COMMENT WHEN THE SURVEY IS OVER
         try {
             // connect to server
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -152,7 +153,7 @@ public class serverHook extends AppCompatActivity {
 
             // build message as a URI for easy parsing
             // contains an ID, a Type, and the contents of the message
-            String urlParameters = type + "=" + toSend + "&ID=" + identifier;
+            String urlParameters = type + "=" + toSend + "&ID=" + identifier + "&type=" + type;
             URL url = new URL(request);
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -162,7 +163,7 @@ public class serverHook extends AppCompatActivity {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("charset", "utf-8");
-            //connection.setRequestProperty("Content-Length", "" + Integer.toString(urlParameters.getBytes().length));
+            connection.setRequestProperty("Content-Length", "" + Integer.toString(urlParameters.getBytes().length));
             connection.setUseCaches(false);
 
             // write the message
@@ -180,7 +181,56 @@ public class serverHook extends AppCompatActivity {
 
             throw e;
         }
-         REMOVE THIS COMMENT WHEN THE SURVEY IS OVER  */
+         //REMOVE THIS COMMENT WHEN THE SURVEY IS OVER  */
+    }
+
+    // initializes serverHook by obtaining a unique ID
+    public static String requestResults(){
+        String result = "";
+        // connect to server
+        try {
+
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+
+            URL url = new URL(request + "/getResults&ID=" + identifier);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(false);
+            connection.setDoInput(true);
+            connection.setInstanceFollowRedirects(false);
+            connection.setRequestMethod("GET");
+            //connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("charset", "utf-8");
+            connection.setUseCaches(false);
+
+            // Attempt to read an ID from the server response
+            BufferedReader in;
+            String output;
+
+            try{
+
+                if (200 <= connection.getResponseCode() && connection.getResponseCode() <= 299) {
+                    in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                } else {
+                    in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                }
+                while ((output = in.readLine()) != null) {
+                    output = output.replace("null", "");
+                    result += output;
+                }
+                in.close();
+            }catch(Exception e){
+
+                return "Error";
+            }
+            connection.disconnect();
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            return "Error";
+        }
+        return result;
     }
 
 
