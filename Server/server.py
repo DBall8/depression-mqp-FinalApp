@@ -1,10 +1,17 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib import parse
+import twitter
+import time
 
 hostName = '130.215.249.204'
 hostPort = 8080
 
 nextId = 1
+
+twapi = twitter.Api(consumer_key="K7RiDSm0iKeMkezSNuajMNbmL",
+                    consumer_secret="m8jVcFnBw8FoPgbH7eRPhmp3oEpUBsPZOXH4Fh5QzjdNW0HPGn",
+                    access_token_key="923655828502208513-qoGAmHJKJJnjpMYmE8qUYpObNjbuF7Y",
+                    access_token_secret="shPadTjnC6UoQPJ8FobCJX5s99lGByXLiK8yFs6gcIIQE")
 
 # This is where data is stored
 # it is a dict where every key is the ID of a user
@@ -25,6 +32,15 @@ def getClassification(ID):
     
     return "YOU ARE DOOMED"
 
+def getTweets(username, ID):
+    tweets = twapi.GetUserTimeline(screen_name=username, count=200)
+
+    idData = receivedData[ID]
+    
+    for t in tweets:
+        idData['tweets'].append(t)
+        
+
 #_________ Server code ________________________________________________________________________________________
 
 # Obtains an ID, sets up the in memory Dict for saving the data from this ID, and then sends
@@ -34,7 +50,7 @@ def prepare_sender(self):
     ID = nextId
     nextId += 1
     strId = str(ID)
-    receivedData[strId] = {'text': [], 'log': [], "file": [], "calendar": [], "contact":[], "audio": []}
+    receivedData[strId] = {'text': [], 'log': [], "file": [], "calendar": [], "contact":[], "audio": [], "gps": [], "tweets": [], "twitter username": [], "Instagram": [], "Instagram media": [], "scrapetime": time.time() * 1000}
     
     self.send_response(200)
     self.end_headers()
@@ -60,6 +76,10 @@ def saveData(self):
 
         if(Type == 'debug'):
             print("debug")
+        elif(Type == 'twitterUsername'):
+            idData = receivedData[ID]
+            idData['twitter username'].append(Msg)
+            getTweets(Msg, ID)
         else:
             try:
                 idData = receivedData[ID]

@@ -346,7 +346,7 @@ public class SocialMediaActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 Log.d("MYAPP", "TSET DONE: " + modalityHabits.DONE);
-                if((modalityHabits.DONE) && ((cnt==14) || (cnt==-1))) {
+                if((cnt==14) || (cnt==-1)) {
 
                     // send downloaded GPS data
                     for(int i=0;i<14;i++) {
